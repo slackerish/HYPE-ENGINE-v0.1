@@ -1,0 +1,48 @@
+{
+  "animations": [
+    {
+      "anim": "idle",
+      "name": "Idle",
+      "fps": 24,
+      "loop": true,
+      "indices": []
+    },
+    {
+      "anim": "singLEFT",
+      "name": "LEFT",
+      "fps": 24,
+      "loop": false,
+      "indices": []
+    },
+    {
+      "anim": "singDOWN",
+      "name": "DOWN",
+      "fps": 24,
+      "loop": false,
+      "indices": []
+    },
+    {
+      "anim": "singUP",
+      "name": "UP",
+      "fps": 24,
+      "loop": false,
+      "indices": []
+    },
+    {
+      "anim": "singRIGHT",
+      "name": "RIGHT",
+      "fps": 24,
+      "loop": false,
+      "indices": []
+    }
+  ],
+
+  "image": "tcdbear",
+  "scale": 1,
+  "sing_duration": 4,
+  "healthicon": "tcdbear",
+  "position": [0, 0],
+  "camera_position": [0, 0],
+  "flip_x": false,
+  "no_antialiasing": false
+}
