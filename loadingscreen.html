@@ -31,7 +31,7 @@
 const canvas = document.getElementById("animCanvas");
 const ctx = canvas.getContext("2d");
 
-// Match canvas to viewport
+// Make canvas always match viewport
 function resizeCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
@@ -39,35 +39,44 @@ function resizeCanvas() {
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
 
-// Animation frames
+// Load spritesheet
+const image = new Image();
+image.src = "HYPEINITUALIZE.png";
+
+// Parse XML from root folder
+function loadXML(name, callback) {
+  const xhr = new XMLHttpRequest();
+  xhr.open("GET", name, true);
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+      callback(xhr.responseText);
+    }
+  };
+  xhr.send();
+}
+
 let frames = [];
 let currentFrame = 0;
 let fps = 24;
 let lastTime = 0;
 
-const image = new Image();
-image.src = "HYPEINITUALIZE.png";
+loadXML("HYPEINITUALIZE.xml", function(xmlString) {
+  const parser = new DOMParser();
+  const xml = parser.parseFromString(xmlString, "application/xml");
+  const subTextures = xml.getElementsByTagName("SubTexture");
 
-fetch("HYPEINITUALIZE.xml")
-  .then(response => response.text())
-  .then(str => {
-    const parser = new DOMParser();
-    const xml = parser.parseFromString(str, "application/xml");
-    const subTextures = xml.getElementsByTagName("SubTexture");
+  for (let i = 0; i < subTextures.length; i++) {
+    frames.push({
+      x: parseInt(subTextures[i].getAttribute("x")),
+      y: parseInt(subTextures[i].getAttribute("y")),
+      width: parseInt(subTextures[i].getAttribute("width")),
+      height: parseInt(subTextures[i].getAttribute("height"))
+    });
+  }
 
-    for (let i = 0; i < subTextures.length; i++) {
-      frames.push({
-        x: parseInt(subTextures[i].getAttribute("x")),
-        y: parseInt(subTextures[i].getAttribute("y")),
-        width: parseInt(subTextures[i].getAttribute("width")),
-        height: parseInt(subTextures[i].getAttribute("height"))
-      });
-    }
-
-    image.onload = () => {
-      requestAnimationFrame(loop);
-    };
-  });
+  // Start animation once the image is loaded
+  image.onload = () => requestAnimationFrame(loop);
+});
 
 function loop(timestamp) {
   if (!lastTime) lastTime = timestamp;
@@ -83,6 +92,8 @@ function loop(timestamp) {
 }
 
 function drawFrame() {
+  if (frames.length === 0) return;
+
   const frame = frames[currentFrame];
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
