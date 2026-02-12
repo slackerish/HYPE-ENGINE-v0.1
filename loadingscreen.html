@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Full Screen Image</title>
+<title>HYPE Initialize</title>
 
 <style>
   * {
@@ -18,29 +18,84 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background: black; /* optional */
+    background: black;
     overflow: hidden;
   }
 
-  .image-container {
+  canvas {
     width: 100vw;
     height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .image-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain; /* keeps image centered and not stretched */
+    object-fit: contain;
   }
 </style>
 </head>
 
 <body>
-  <div class="image-container">
-    <img src="Untitled143_20260212084238.png" alt="Full Screen Image">
-  </div>
+
+<canvas id="animCanvas"></canvas>
+
+<script>
+const canvas = document.getElementById("animCanvas");
+const ctx = canvas.getContext("2d");
+
+canvas.width = 2730;
+canvas.height = 2301;
+
+let frames = [];
+let currentFrame = 0;
+let fps = 24; // change speed here
+let lastTime = 0;
+
+const image = new Image();
+image.src = "HYPEINITUALIZE.png";
+
+fetch("HYPEINITUALIZE.xml")
+  .then(response => response.text())
+  .then(str => {
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(str, "application/xml");
+    const subTextures = xml.getElementsByTagName("SubTexture");
+
+    for (let i = 0; i < subTextures.length; i++) {
+      frames.push({
+        x: parseInt(subTextures[i].getAttribute("x")),
+        y: parseInt(subTextures[i].getAttribute("y")),
+        width: parseInt(subTextures[i].getAttribute("width")),
+        height: parseInt(subTextures[i].getAttribute("height"))
+      });
+    }
+
+    image.onload = () => {
+      requestAnimationFrame(loop);
+    };
+  });
+
+function loop(timestamp) {
+  if (!lastTime) lastTime = timestamp;
+  const delta = timestamp - lastTime;
+
+  if (delta > 1000 / fps) {
+    lastTime = timestamp;
+    drawFrame();
+    currentFrame++;
+    if (currentFrame >= frames.length) {
+      currentFrame = 0; // loop endlessly
+    }
+  }
+
+  requestAnimationFrame(loop);
+}
+
+function drawFrame() {
+  const frame = frames[currentFrame];
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(
+    image,
+    frame.x, frame.y, frame.width, frame.height,
+    0, 0, canvas.width, canvas.height
+  );
+}
+</script>
+
 </body>
 </html>
