@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HYPE Initialize</title>
-
 <style>
   html, body {
     margin: 0;
@@ -14,7 +13,6 @@
     overflow: hidden;
     background: black;
   }
-
   canvas {
     display: block;
     width: 100%;
@@ -22,7 +20,6 @@
   }
 </style>
 </head>
-
 <body>
 
 <canvas id="animCanvas"></canvas>
@@ -31,7 +28,7 @@
 const canvas = document.getElementById("animCanvas");
 const ctx = canvas.getContext("2d");
 
-// Make canvas always match viewport
+// Make canvas match viewport
 function resizeCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
@@ -39,45 +36,44 @@ function resizeCanvas() {
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
 
-// Load spritesheet
+// Load PNG spritesheet
 const image = new Image();
 image.src = "HYPEINITUALIZE.png";
 
-// Parse XML from root folder
-function loadXML(name, callback) {
-  const xhr = new XMLHttpRequest();
-  xhr.open("GET", name, true);
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState === 4 && xhr.status === 200) {
-      callback(xhr.responseText);
-    }
-  };
-  xhr.send();
-}
-
+// Load XML and parse frames
 let frames = [];
 let currentFrame = 0;
 let fps = 24;
 let lastTime = 0;
 
-loadXML("HYPEINITUALIZE.xml", function(xmlString) {
-  const parser = new DOMParser();
-  const xml = parser.parseFromString(xmlString, "application/xml");
-  const subTextures = xml.getElementsByTagName("SubTexture");
+// Use XMLHttpRequest to load XML from root
+const xhr = new XMLHttpRequest();
+xhr.open("GET", "HYPEINITUALIZE.xml", true);
+xhr.onreadystatechange = function() {
+  if (xhr.readyState === 4 && xhr.status === 200) {
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(xhr.responseText, "application/xml");
+    const subTextures = xml.getElementsByTagName("SubTexture");
+    for (let i = 0; i < subTextures.length; i++) {
+      frames.push({
+        x: parseInt(subTextures[i].getAttribute("x")),
+        y: parseInt(subTextures[i].getAttribute("y")),
+        width: parseInt(subTextures[i].getAttribute("width")),
+        height: parseInt(subTextures[i].getAttribute("height"))
+      });
+    }
 
-  for (let i = 0; i < subTextures.length; i++) {
-    frames.push({
-      x: parseInt(subTextures[i].getAttribute("x")),
-      y: parseInt(subTextures[i].getAttribute("y")),
-      width: parseInt(subTextures[i].getAttribute("width")),
-      height: parseInt(subTextures[i].getAttribute("height"))
-    });
+    // Start animation once image is loaded
+    if (image.complete) {
+      requestAnimationFrame(loop);
+    } else {
+      image.onload = () => requestAnimationFrame(loop);
+    }
   }
+};
+xhr.send();
 
-  // Start animation once the image is loaded
-  image.onload = () => requestAnimationFrame(loop);
-});
-
+// Animation loop
 function loop(timestamp) {
   if (!lastTime) lastTime = timestamp;
   const delta = timestamp - lastTime;
@@ -85,19 +81,19 @@ function loop(timestamp) {
   if (delta > 1000 / fps) {
     lastTime = timestamp;
     drawFrame();
-    currentFrame = (currentFrame + 1) % frames.length;
+    currentFrame = (currentFrame + 1) % frames.length; // loop endlessly
   }
 
   requestAnimationFrame(loop);
 }
 
+// Draw current frame
 function drawFrame() {
   if (frames.length === 0) return;
-
   const frame = frames[currentFrame];
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Scale frame to fill the canvas while keeping aspect ratio
+  // Scale to fill viewport while maintaining aspect ratio
   const scale = Math.max(canvas.width / frame.width, canvas.height / frame.height);
   const drawWidth = frame.width * scale;
   const drawHeight = frame.height * scale;
@@ -106,8 +102,8 @@ function drawFrame() {
 
   ctx.drawImage(
     image,
-    frame.x, frame.y, frame.width, frame.height, // cut from spritesheet
-    dx, dy, drawWidth, drawHeight               // draw scaled to canvas
+    frame.x, frame.y, frame.width, frame.height, // cut frame from PNG
+    dx, dy, drawWidth, drawHeight               // scale to viewport
   );
 }
 </script>
