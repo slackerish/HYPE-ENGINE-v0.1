@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+
+<title>HYPE ENGINE - Friday Night Funkin'</title>
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<link rel="shortcut icon" type="image/png" href="./hype.png">
+
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+}
+
+#game-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+}
+
+canvas {
+    background: #000;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+</style>
+</head>
+
+<body>
+<!-- HYPE ENGINE v0.1 - Chromebook Optimized -->
+
+<noscript>
+This webpage requires JavaScript to run HYPE ENGINE.
+</noscript>
+
+<div id="game-container">
+    <!-- Internal resolution set to Chromebook base -->
+    <canvas id="game-canvas" width="1366" height="768"></canvas>
+</div>
+
+<script type="module">
+import './system/core/Engine.js';
+
+const canvas = document.getElementById("game-canvas");
+
+const BASE_WIDTH = 1366;
+const BASE_HEIGHT = 768;
+
+function resizeCanvas() {
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+
+    const scaleX = screenWidth / BASE_WIDTH;
+    const scaleY = screenHeight / BASE_HEIGHT;
+
+    const scale = Math.min(scaleX, scaleY);
+
+    canvas.style.width = `${BASE_WIDTH * scale}px`;
+    canvas.style.height = `${BASE_HEIGHT * scale}px`;
+}
+
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
+</script>
+
+</body>
+</html>
