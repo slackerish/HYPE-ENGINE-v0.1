@@ -1,0 +1,27 @@
+{
+  "animations": [
+    {
+      "anim": "danceLeft",
+      "name": "IDLE",
+      "fps": 24,
+      "loop": true,
+      "indices": []
+    },
+    {
+      "anim": "danceRight",
+      "name": "IDLE",
+      "fps": 24,
+      "loop": true,
+      "indices": []
+    }
+  ],
+
+  "image": "tcdgf",
+  "scale": 1,
+  "sing_duration": 4,
+  "healthicon": "tcdgf",
+  "position": [0, 0],
+  "camera_position": [0, 0],
+  "flip_x": false,
+  "no_antialiasing": false
+}
