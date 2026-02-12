@@ -6,26 +6,19 @@
 <title>HYPE Initialize</title>
 
 <style>
-  * {
+  html, body {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-  }
-
-  body {
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: black;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
+    background: black;
   }
 
   canvas {
-    width: 100vw;
-    height: 100vh;
-    object-fit: contain;
+    display: block;
+    width: 100%;
+    height: 100%;
   }
 </style>
 </head>
@@ -38,12 +31,18 @@
 const canvas = document.getElementById("animCanvas");
 const ctx = canvas.getContext("2d");
 
-canvas.width = 2730;
-canvas.height = 2301;
+// Match canvas to viewport
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
 
+// Animation frames
 let frames = [];
 let currentFrame = 0;
-let fps = 24; // change speed here
+let fps = 24;
 let lastTime = 0;
 
 const image = new Image();
@@ -77,10 +76,7 @@ function loop(timestamp) {
   if (delta > 1000 / fps) {
     lastTime = timestamp;
     drawFrame();
-    currentFrame++;
-    if (currentFrame >= frames.length) {
-      currentFrame = 0; // loop endlessly
-    }
+    currentFrame = (currentFrame + 1) % frames.length;
   }
 
   requestAnimationFrame(loop);
@@ -89,10 +85,18 @@ function loop(timestamp) {
 function drawFrame() {
   const frame = frames[currentFrame];
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Scale frame to fill the canvas while keeping aspect ratio
+  const scale = Math.max(canvas.width / frame.width, canvas.height / frame.height);
+  const drawWidth = frame.width * scale;
+  const drawHeight = frame.height * scale;
+  const dx = (canvas.width - drawWidth) / 2;
+  const dy = (canvas.height - drawHeight) / 2;
+
   ctx.drawImage(
     image,
-    frame.x, frame.y, frame.width, frame.height,
-    0, 0, canvas.width, canvas.height
+    frame.x, frame.y, frame.width, frame.height, // cut from spritesheet
+    dx, dy, drawWidth, drawHeight               // draw scaled to canvas
   );
 }
 </script>
