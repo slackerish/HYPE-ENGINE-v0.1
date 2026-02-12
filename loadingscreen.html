@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Full Screen Image</title>
+
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: black; /* optional */
+    overflow: hidden;
+  }
+
+  .image-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* keeps image centered and not stretched */
+  }
+</style>
+</head>
+
+<body>
+  <div class="image-container">
+    <img src="Untitled143_20260212084238.png" alt="Full Screen Image">
+  </div>
+</body>
+</html>
